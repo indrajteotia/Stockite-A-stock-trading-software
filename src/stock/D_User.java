@@ -4,6 +4,9 @@ package stock;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
+import java.sql.*;
+import java.sql.DriverManager;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -11,13 +14,52 @@ package stock;
  */
 public class D_User extends javax.swing.JFrame {
     
-    int n = 0;
+    Connection con = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    
 
     /**
      * Creates new form A_welcome
      */
     public D_User() {
         initComponents();
+        
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/stockite","root","rkgit123");
+            
+            pst = con.prepareStatement("select * from current");
+            rs = pst.executeQuery();
+            String curr_id = new String();
+            while(rs.next())
+            {
+                curr_id = rs.getString("id");
+            }
+            
+            pst = con.prepareStatement("select * from users where id='"+curr_id+"'");
+            rs = pst.executeQuery();
+            while(rs.next())
+            {
+                String id = rs.getString("id");
+                String amount = rs.getString("amount");
+                String stock = rs.getString("stock");
+                idHolder.setText(id);
+                mnyHolder.setText(amount);
+                stkHolder.setText(stock);
+            }
+            
+            pst = con.prepareStatement("select * from cost");
+            rs = pst.executeQuery();
+            while(rs.next())
+            {
+                String cost = rs.getString("price");
+                prcHolder.setText(cost);
+            }
+            
+        } catch (ClassNotFoundException | SQLException ex) {
+            JOptionPane.showMessageDialog(null, "No Record Found", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -115,7 +157,7 @@ public class D_User extends javax.swing.JFrame {
         stkHolder.setForeground(new java.awt.Color(0, 255, 153));
         stkHolder.setText("10");
         bodyPnl.add(stkHolder);
-        stkHolder.setBounds(260, 180, 140, 40);
+        stkHolder.setBounds(260, 180, 80, 40);
 
         mnyLbl.setFont(new java.awt.Font("Mongolian Baiti", 1, 18)); // NOI18N
         mnyLbl.setForeground(new java.awt.Color(102, 153, 255));
@@ -128,7 +170,7 @@ public class D_User extends javax.swing.JFrame {
         mnyHolder.setForeground(new java.awt.Color(0, 255, 153));
         mnyHolder.setText("100");
         bodyPnl.add(mnyHolder);
-        mnyHolder.setBounds(260, 130, 140, 40);
+        mnyHolder.setBounds(260, 130, 80, 40);
 
         idLbl.setFont(new java.awt.Font("Mongolian Baiti", 1, 18)); // NOI18N
         idLbl.setForeground(new java.awt.Color(102, 153, 255));
@@ -195,6 +237,11 @@ public class D_User extends javax.swing.JFrame {
         sellConBtn.setFont(new java.awt.Font("MS PGothic", 1, 18)); // NOI18N
         sellConBtn.setForeground(new java.awt.Color(51, 0, 153));
         sellConBtn.setText("Confirm Transaction");
+        sellConBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sellConBtnActionPerformed(evt);
+            }
+        });
         sellPnl.add(sellConBtn);
         sellConBtn.setBounds(140, 180, 200, 30);
 
@@ -227,6 +274,11 @@ public class D_User extends javax.swing.JFrame {
         buyConBtn.setFont(new java.awt.Font("MS PGothic", 1, 18)); // NOI18N
         buyConBtn.setForeground(new java.awt.Color(51, 0, 153));
         buyConBtn.setText("Confirm Transaction");
+        buyConBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buyConBtnActionPerformed(evt);
+            }
+        });
         buyPnl.add(buyConBtn);
         buyConBtn.setBounds(140, 180, 200, 30);
 
@@ -249,6 +301,16 @@ public class D_User extends javax.swing.JFrame {
 
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
         // TODO add your handling code here:
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/stockite","root","rkgit123");
+            
+            pst = con.prepareStatement("delete from current");
+            pst.executeUpdate();
+            
+        } catch (ClassNotFoundException | SQLException ex) {
+            JOptionPane.showMessageDialog(null, "No Record Found", "Error", JOptionPane.ERROR_MESSAGE);
+        }
         new A_Welcome().setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_backBtnActionPerformed
@@ -274,6 +336,60 @@ public class D_User extends javax.swing.JFrame {
         // TODO add your handling code here:
         backBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/stock/imgBack.png")));
     }//GEN-LAST:event_backBtnMouseExited
+
+    private void sellConBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sellConBtnActionPerformed
+        // TODO add your handling code here:
+        int amount = Integer.parseInt(mnyHolder.getText());
+        int stock = Integer.parseInt(stkHolder.getText());
+        int price = Integer.parseInt(prcHolder.getText());
+        int sell = Integer.parseInt(sellTxt.getText());
+        String id = idHolder.getText();
+        
+        amount += sell*price;
+        stock -= sell;
+        
+         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/stockite","root","rkgit123");
+            
+            pst = con.prepareStatement("update users set amount="+amount+" , stock="+stock+" where id='"+id+"'");
+            pst.executeUpdate();
+            
+        } catch (ClassNotFoundException | SQLException ex) {
+            JOptionPane.showMessageDialog(null, "No Record Found", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+         
+         
+         new D_User().setVisible(true);
+         this.setVisible(false);
+    }//GEN-LAST:event_sellConBtnActionPerformed
+
+    private void buyConBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buyConBtnActionPerformed
+        // TODO add your handling code here:
+         int amount = Integer.parseInt(mnyHolder.getText());
+        int stock = Integer.parseInt(stkHolder.getText());
+        int price = Integer.parseInt(prcHolder.getText());
+        int buy = Integer.parseInt(buyTxt.getText());
+        String id = idHolder.getText();
+        
+        amount -= buy*price;
+        stock += buy;
+        
+         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/stockite","root","rkgit123");
+            
+            pst = con.prepareStatement("update users set amount="+amount+" , stock="+stock+" where id='"+id+"'");
+            pst.executeUpdate();
+            
+        } catch (ClassNotFoundException | SQLException ex) {
+            JOptionPane.showMessageDialog(null, "No Record Found", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+         
+         
+         new D_User().setVisible(true);
+         this.setVisible(false);
+    }//GEN-LAST:event_buyConBtnActionPerformed
 
     /**
      * @param args the command line arguments

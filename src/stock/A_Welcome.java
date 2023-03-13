@@ -44,13 +44,13 @@ public class A_Welcome extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(0, 204, 204));
         jLabel1.setText("- by Indraj");
         bdyPnl.add(jLabel1);
-        jLabel1.setBounds(430, 60, 180, 70);
+        jLabel1.setBounds(430, 210, 180, 70);
 
         jLabel2.setFont(new java.awt.Font("Liberation Mono", 1, 36)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 204, 204));
-        jLabel2.setText("Welcum to Stocks");
+        jLabel2.setText("Welcome to Stockite");
         bdyPnl.add(jLabel2);
-        jLabel2.setBounds(130, 20, 370, 70);
+        jLabel2.setBounds(230, 140, 400, 70);
 
         nxtBtn.setFont(new java.awt.Font("Courier 10 Pitch", 1, 18)); // NOI18N
         nxtBtn.setText("Continue ->");
@@ -73,7 +73,7 @@ public class A_Welcome extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(bdyPnl, javax.swing.GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
+            .addComponent(bdyPnl, javax.swing.GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE)
         );
 
         setBounds(300, 200, 814, 460);

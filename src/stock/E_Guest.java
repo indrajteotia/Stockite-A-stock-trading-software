@@ -4,14 +4,19 @@ package stock;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.sql.*;
+import java.sql.DriverManager;
+import javax.swing.JOptionPane;
 /**
  *
  * @author indrajteotia
  */
 public class E_Guest extends javax.swing.JFrame {
+    
+    Connection con = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+   
    
 
     /**
@@ -19,6 +24,30 @@ public class E_Guest extends javax.swing.JFrame {
      */
     public E_Guest() {
         initComponents();
+        
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/stockite","root","rkgit123");
+            
+            pst = con.prepareStatement("select * from current");
+            rs = pst.executeQuery();
+            while(rs.next())
+            {
+                String curr_id = rs.getString("id");
+                idHolder.setText(curr_id);
+            }
+            
+            pst = con.prepareStatement("select * from cost");
+            rs = pst.executeQuery();
+            while(rs.next())
+            {
+                String cost = rs.getString("price");
+                prcHolder.setText(cost);
+            }
+            
+        } catch (ClassNotFoundException | SQLException ex) {
+            JOptionPane.showMessageDialog(null, "No Record Found", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -37,19 +66,8 @@ public class E_Guest extends javax.swing.JFrame {
         backBtn = new javax.swing.JButton();
         idLbl = new javax.swing.JLabel();
         idHolder = new javax.swing.JLabel();
-        try{
-            File name = new File("enter.txt");
-            Scanner nameholder = new Scanner(name);
-            String namevalue;
-            while(nameholder.hasNextLine());
-            {
-                namevalue = nameholder.nextLine();
-            }
-            nameholder.close();
-            idHolder.setText(namevalue);
-        } catch(FileNotFoundException ex) {
-            System.out.println("can't read");
-        }
+        prcLbl = new javax.swing.JLabel();
+        prcHolder = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Guest Page");
@@ -89,15 +107,28 @@ public class E_Guest extends javax.swing.JFrame {
         idLbl.setFont(new java.awt.Font("Mongolian Baiti", 1, 18)); // NOI18N
         idLbl.setForeground(new java.awt.Color(102, 153, 255));
         idLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        idLbl.setText("UserID :");
+        idLbl.setText("GuestID:");
         bodyPnl.add(idLbl);
-        idLbl.setBounds(110, 80, 130, 40);
+        idLbl.setBounds(110, 120, 130, 40);
 
         idHolder.setFont(new java.awt.Font("Nirmala UI", 1, 18)); // NOI18N
         idHolder.setForeground(new java.awt.Color(0, 255, 153));
-        idHolder.setText("User");
+        idHolder.setText("Guest");
         bodyPnl.add(idHolder);
-        idHolder.setBounds(260, 80, 140, 40);
+        idHolder.setBounds(260, 120, 140, 40);
+
+        prcLbl.setFont(new java.awt.Font("Mongolian Baiti", 1, 18)); // NOI18N
+        prcLbl.setForeground(new java.awt.Color(255, 102, 0));
+        prcLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        prcLbl.setText("Stocks Price :");
+        bodyPnl.add(prcLbl);
+        prcLbl.setBounds(80, 180, 160, 40);
+
+        prcHolder.setFont(new java.awt.Font("Nirmala UI", 1, 18)); // NOI18N
+        prcHolder.setForeground(new java.awt.Color(255, 255, 51));
+        prcHolder.setText("100");
+        bodyPnl.add(prcHolder);
+        prcHolder.setBounds(260, 180, 140, 40);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -181,5 +212,7 @@ public class E_Guest extends javax.swing.JFrame {
     private javax.swing.JLabel icon;
     private javax.swing.JLabel idHolder;
     private javax.swing.JLabel idLbl;
+    private javax.swing.JLabel prcHolder;
+    private javax.swing.JLabel prcLbl;
     // End of variables declaration//GEN-END:variables
 }
