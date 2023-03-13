@@ -1,21 +1,20 @@
 package stock;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.*;
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
+import java.sql.*;
+import java.sql.DriverManager;
+import javax.swing.JOptionPane;
 /**
  *
  * @author indrajteotia
  */
 public class B_Login extends javax.swing.JFrame {
+    
+    Connection con = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
     
     int n = 0;
 
@@ -55,6 +54,7 @@ public class B_Login extends javax.swing.JFrame {
         icon = new javax.swing.JLabel();
         icon.setVisible(false);
         backBtn = new javax.swing.JButton();
+        crtBtn = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login Page");
@@ -135,7 +135,7 @@ public class B_Login extends javax.swing.JFrame {
         pwdLbl.setForeground(new java.awt.Color(255, 153, 153));
         pwdLbl.setText("Password :");
         bodyPnl.add(pwdLbl);
-        pwdLbl.setBounds(80, 290, 150, 50);
+        pwdLbl.setBounds(80, 270, 150, 50);
 
         idTxt.setBackground(new java.awt.Color(102, 255, 102));
         idTxt.setFont(new java.awt.Font("Franklin Gothic Medium", 0, 24)); // NOI18N
@@ -164,7 +164,7 @@ public class B_Login extends javax.swing.JFrame {
             }
         });
         bodyPnl.add(shwBtn);
-        shwBtn.setBounds(600, 290, 50, 50);
+        shwBtn.setBounds(590, 280, 60, 40);
 
         loginBtn.setFont(new java.awt.Font("Courier 10 Pitch", 1, 18)); // NOI18N
         loginBtn.setText("Login ->");
@@ -194,7 +194,7 @@ public class B_Login extends javax.swing.JFrame {
             }
         });
         bodyPnl.add(pwdTxt);
-        pwdTxt.setBounds(240, 292, 350, 40);
+        pwdTxt.setBounds(240, 280, 350, 40);
 
         icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/stock/imgadm.png"))); // NOI18N
         bodyPnl.add(icon);
@@ -217,6 +217,13 @@ public class B_Login extends javax.swing.JFrame {
         bodyPnl.add(backBtn);
         backBtn.setBounds(30, 30, 50, 50);
 
+        crtBtn.setForeground(new java.awt.Color(153, 153, 255));
+        crtBtn.setText("Create Account");
+        crtBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        crtBtn.setVisible(false);
+        bodyPnl.add(crtBtn);
+        crtBtn.setBounds(430, 320, 150, 16);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -235,13 +242,6 @@ public class B_Login extends javax.swing.JFrame {
         // TODO add your handling code here:
           String id = idTxt.getText();
           String pwd = new String(pwdTxt.getPassword());
-          
-          try (FileWriter entr = new FileWriter("enter.txt")) {
-              entr.write(""+id);
-              entr.close();
-          } catch(IOException ex) {
-              System.out.println("Can't write file");
-          }
         
         if(n == 1)
         {
@@ -257,8 +257,27 @@ public class B_Login extends javax.swing.JFrame {
         }
         
         if(n == 2)
-        {
-            if( ("User".equals(id)) && ("User123".equals(pwd)))
+        {  
+            String db_pass = new String();
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                 con = DriverManager.getConnection("jdbc:mysql://localhost:3306/stockite","root","rkgit123");
+            
+                pst = con.prepareStatement("select pass from users where id='"+id+"'");
+                rs = pst.executeQuery();
+                
+                while(rs.next())
+                {
+                    db_pass = rs.getString("pass");
+                }
+                
+                pst = con.prepareStatement("insert into current values('"+id+"')");
+                pst.executeUpdate();
+            
+             } catch (ClassNotFoundException | SQLException ex) {
+            JOptionPane.showMessageDialog(null, "No Record Found", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if(db_pass.equals(pwd))
             {
                 new D_User().setVisible(true);
                 this.setVisible(false);
@@ -271,8 +290,16 @@ public class B_Login extends javax.swing.JFrame {
         
         if(n == 3)
         {
-               
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                 con = DriverManager.getConnection("jdbc:mysql://localhost:3306/stockite","root","rkgit123");
             
+                pst = con.prepareStatement("insert into current values('"+id+"')");
+                pst.executeUpdate();
+            
+             } catch (ClassNotFoundException | SQLException ex) {
+            JOptionPane.showMessageDialog(null, "No Record Found", "Error", JOptionPane.ERROR_MESSAGE);
+            }
                 new E_Guest().setVisible(true);
                 this.setVisible(false);
         }
@@ -293,6 +320,7 @@ public class B_Login extends javax.swing.JFrame {
         pwdLbl.setVisible(true);
         pwdTxt.setVisible(true);
         shwBtn.setVisible(true);
+        crtBtn.setVisible(false);
     }//GEN-LAST:event_admBtnActionPerformed
 
     private void usrBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usrBtnActionPerformed
@@ -310,6 +338,7 @@ public class B_Login extends javax.swing.JFrame {
         pwdLbl.setVisible(true);
         pwdTxt.setVisible(true);
         shwBtn.setVisible(true);
+        crtBtn.setVisible(true);
     }//GEN-LAST:event_usrBtnActionPerformed
 
     private void gstBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gstBtnActionPerformed
@@ -327,6 +356,7 @@ public class B_Login extends javax.swing.JFrame {
         pwdLbl.setVisible(false);
         pwdTxt.setVisible(false);
         shwBtn.setVisible(false);
+        crtBtn.setVisible(false);
     }//GEN-LAST:event_gstBtnActionPerformed
 
     private void admBtnFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_admBtnFocusGained
@@ -427,6 +457,7 @@ public class B_Login extends javax.swing.JFrame {
     private javax.swing.JButton admBtn;
     private javax.swing.JButton backBtn;
     private javax.swing.JPanel bodyPnl;
+    private javax.swing.JLabel crtBtn;
     private javax.swing.JButton gstBtn;
     private javax.swing.JLabel headLbl;
     private javax.swing.JLabel icon;
