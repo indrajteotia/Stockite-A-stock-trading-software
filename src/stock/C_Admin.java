@@ -4,20 +4,62 @@ package stock;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
+import java.sql.*;
+import java.sql.DriverManager;
+import java.util.Vector;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author indrajteotia
  */
 public class C_Admin extends javax.swing.JFrame {
     
-    int n = 0;
+    Connection con = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
 
     /**
      * Creates new form A_welcome
      */
     public C_Admin() {
         initComponents();
+        
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/stockite","root","rkgit123");
+            pst = con.prepareStatement("select * from users");
+            rs = pst.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int a = rsmd.getColumnCount();
+            DefaultTableModel dtm = (DefaultTableModel) usrTbl.getModel();
+            dtm.setRowCount(0);
+            
+            while(rs.next())
+            {
+                Vector v = new Vector();
+                for(int i = 1 ; i <=a;i++)
+                {
+                    v.add(rs.getString("id"));
+                    v.add(rs.getString("pass"));
+                    v.add(rs.getString("amount"));
+                    v.add(rs.getString("stock"));
+                }
+                dtm.addRow(v);
+                
+            pst = con.prepareStatement("select * from cost");
+            rs = pst.executeQuery();
+            String cost = new String();
+            while(rs.next())
+            {
+                cost = rs.getString("price");
+            }
+            prcHolder.setText(cost);
+            }
+            
+        } catch (ClassNotFoundException | SQLException ex) {
+            JOptionPane.showMessageDialog(null, "No Record Found", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -35,6 +77,15 @@ public class C_Admin extends javax.swing.JFrame {
         usrTbl = new javax.swing.JTable();
         icon = new javax.swing.JLabel();
         backBtn = new javax.swing.JButton();
+        shwBtn = new javax.swing.JToggleButton();
+        cngPnl = new javax.swing.JPanel();
+        cngLbl = new javax.swing.JLabel();
+        cngTxt = new javax.swing.JTextField();
+        bckBtn = new javax.swing.JButton();
+        cnfBtn = new javax.swing.JButton();
+        prcLbl = new javax.swing.JLabel();
+        prcHolder = new javax.swing.JLabel();
+        cngBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Admin Page");
@@ -50,37 +101,41 @@ public class C_Admin extends javax.swing.JFrame {
         bodyPnl.add(headLbl);
         headLbl.setBounds(290, 0, 210, 70);
 
+        usrTblScrl.setBackground(new java.awt.Color(102, 0, 102));
+        usrTblScrl.setForeground(new java.awt.Color(255, 204, 204));
+
         usrTbl.setAutoCreateRowSorter(true);
         usrTbl.setBackground(new java.awt.Color(0, 102, 102));
         usrTbl.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 3));
-        usrTbl.setFont(new java.awt.Font("Microsoft YaHei UI", 0, 18)); // NOI18N
-        usrTbl.setForeground(new java.awt.Color(102, 255, 102));
+        usrTbl.setFont(new java.awt.Font("Segoe UI Black", 1, 12)); // NOI18N
+        usrTbl.setForeground(new java.awt.Color(255, 204, 204));
         usrTbl.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Username", "Password", "Money", "Stock"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         usrTbl.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         usrTbl.setFocusable(false);
         usrTbl.setGridColor(new java.awt.Color(0, 51, 51));
         usrTbl.setRequestFocusEnabled(false);
         usrTbl.setShowGrid(true);
+        usrTblScrl.setVisible(false);
+        usrTbl.setVisible(false);
         usrTblScrl.setViewportView(usrTbl);
 
         bodyPnl.add(usrTblScrl);
-        usrTblScrl.setBounds(20, 170, 740, 230);
+        usrTblScrl.setBounds(20, 240, 740, 160);
 
         icon.setIcon(new javax.swing.ImageIcon(getClass().getResource("/stock/imgadm.png"))); // NOI18N
         bodyPnl.add(icon);
@@ -102,6 +157,96 @@ public class C_Admin extends javax.swing.JFrame {
         });
         bodyPnl.add(backBtn);
         backBtn.setBounds(30, 30, 50, 50);
+
+        shwBtn.setBackground(new java.awt.Color(51, 0, 51));
+        shwBtn.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
+        shwBtn.setForeground(new java.awt.Color(255, 204, 204));
+        shwBtn.setText("Show Users");
+        shwBtn.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                shwBtnStateChanged(evt);
+            }
+        });
+        shwBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                shwBtnActionPerformed(evt);
+            }
+        });
+        bodyPnl.add(shwBtn);
+        shwBtn.setBounds(20, 193, 114, 40);
+
+        cngPnl.setBackground(new java.awt.Color(102, 0, 102));
+        cngPnl.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Change Stock Cost", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI Black", 1, 12), new java.awt.Color(204, 204, 255))); // NOI18N
+        cngPnl.setVisible(false);
+        cngPnl.setLayout(null);
+
+        cngLbl.setFont(new java.awt.Font("Rockwell", 1, 12)); // NOI18N
+        cngLbl.setForeground(new java.awt.Color(255, 204, 204));
+        cngLbl.setText("Enter New Cost :");
+        cngPnl.add(cngLbl);
+        cngLbl.setBounds(11, 25, 100, 30);
+
+        cngTxt.setFont(new java.awt.Font("Rockwell", 1, 14)); // NOI18N
+        cngTxt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cngTxtActionPerformed(evt);
+            }
+        });
+        cngPnl.add(cngTxt);
+        cngTxt.setBounds(120, 30, 140, 30);
+
+        bckBtn.setBackground(new java.awt.Color(51, 0, 51));
+        bckBtn.setFont(new java.awt.Font("Segoe UI Black", 1, 12)); // NOI18N
+        bckBtn.setForeground(new java.awt.Color(153, 153, 255));
+        bckBtn.setText("< Back");
+        bckBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bckBtnActionPerformed(evt);
+            }
+        });
+        cngPnl.add(bckBtn);
+        bckBtn.setBounds(30, 90, 72, 24);
+
+        cnfBtn.setBackground(new java.awt.Color(51, 0, 51));
+        cnfBtn.setFont(new java.awt.Font("Segoe UI Black", 1, 12)); // NOI18N
+        cnfBtn.setForeground(new java.awt.Color(153, 153, 255));
+        cnfBtn.setText("Confirm >");
+        cnfBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cnfBtnActionPerformed(evt);
+            }
+        });
+        cngPnl.add(cnfBtn);
+        cnfBtn.setBounds(155, 90, 100, 24);
+
+        bodyPnl.add(cngPnl);
+        cngPnl.setBounds(230, 70, 290, 150);
+
+        prcLbl.setFont(new java.awt.Font("Mongolian Baiti", 1, 18)); // NOI18N
+        prcLbl.setForeground(new java.awt.Color(255, 102, 0));
+        prcLbl.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        prcLbl.setText("Stocks Price :");
+        bodyPnl.add(prcLbl);
+        prcLbl.setBounds(210, 90, 160, 40);
+
+        prcHolder.setFont(new java.awt.Font("Nirmala UI", 1, 18)); // NOI18N
+        prcHolder.setForeground(new java.awt.Color(255, 255, 51));
+        prcHolder.setText("100");
+        bodyPnl.add(prcHolder);
+        prcHolder.setBounds(380, 90, 90, 40);
+
+        cngBtn.setBackground(new java.awt.Color(102, 0, 0));
+        cngBtn.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
+        cngBtn.setForeground(new java.awt.Color(153, 255, 153));
+        cngBtn.setText("Change Cost");
+        cngBtn.setBorder(new javax.swing.border.MatteBorder(null));
+        cngBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cngBtnActionPerformed(evt);
+            }
+        });
+        bodyPnl.add(cngBtn);
+        cngBtn.setBounds(290, 140, 121, 26);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -133,6 +278,63 @@ public class C_Admin extends javax.swing.JFrame {
         new A_Welcome().setVisible(true);
         this.setVisible(false);
     }//GEN-LAST:event_backBtnActionPerformed
+
+    private void shwBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shwBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_shwBtnActionPerformed
+
+    private void shwBtnStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_shwBtnStateChanged
+        // TODO add your handling code here:
+        if(shwBtn.isSelected())
+        {
+            shwBtn.setText("Hide Users");
+            usrTblScrl.setVisible(true);
+            usrTbl.setVisible(true);
+        }
+        else
+        {
+            shwBtn.setText("ShowUsers");
+            usrTblScrl.setVisible(false);
+            usrTbl.setVisible(false);
+            
+        }
+    }//GEN-LAST:event_shwBtnStateChanged
+
+    private void cngBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cngBtnActionPerformed
+        // TODO add your handling code here:
+        cngPnl.setVisible(true);
+    }//GEN-LAST:event_cngBtnActionPerformed
+
+    private void cngTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cngTxtActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cngTxtActionPerformed
+
+    private void bckBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bckBtnActionPerformed
+        // TODO add your handling code here:
+        cngPnl.setVisible(false);
+    }//GEN-LAST:event_bckBtnActionPerformed
+
+    private void cnfBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cnfBtnActionPerformed
+        // TODO add your handling code here:
+        int new_cost = Integer.parseInt(cngTxt.getText());
+        
+       try{
+           String sql = "insert into cost values("+new_cost+");";
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/stockite","root","rkgit123");
+            pst = con.prepareStatement("delete from cost");
+            pst.executeUpdate();
+            pst = con.prepareStatement(sql);
+            pst.executeUpdate();
+       }
+       catch(ClassNotFoundException | SQLException ex)
+       {
+           
+       }
+
+        new C_Admin().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_cnfBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -175,9 +377,18 @@ public class C_Admin extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backBtn;
+    private javax.swing.JButton bckBtn;
     private javax.swing.JPanel bodyPnl;
+    private javax.swing.JButton cnfBtn;
+    private javax.swing.JButton cngBtn;
+    private javax.swing.JLabel cngLbl;
+    private javax.swing.JPanel cngPnl;
+    private javax.swing.JTextField cngTxt;
     private javax.swing.JLabel headLbl;
     private javax.swing.JLabel icon;
+    private javax.swing.JLabel prcHolder;
+    private javax.swing.JLabel prcLbl;
+    private javax.swing.JToggleButton shwBtn;
     private javax.swing.JTable usrTbl;
     private javax.swing.JScrollPane usrTblScrl;
     // End of variables declaration//GEN-END:variables
