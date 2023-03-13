@@ -34,7 +34,6 @@ public class A_Welcome extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Welcome Page");
-        setAlwaysOnTop(true);
         setBackground(new java.awt.Color(0, 51, 51));
 
         bdyPnl.setBackground(new java.awt.Color(0, 51, 51));

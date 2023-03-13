@@ -71,7 +71,6 @@ public class E_Guest extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Guest Page");
-        setAlwaysOnTop(true);
         setBackground(new java.awt.Color(0, 51, 51));
 
         bodyPnl.setBackground(new java.awt.Color(0, 51, 51));

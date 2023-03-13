@@ -58,7 +58,6 @@ public class B_Login extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login Page");
-        setAlwaysOnTop(true);
         setBackground(new java.awt.Color(0, 51, 51));
 
         bodyPnl.setBackground(new java.awt.Color(0, 51, 51));
@@ -221,8 +220,13 @@ public class B_Login extends javax.swing.JFrame {
         crtBtn.setText("Create Account");
         crtBtn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         crtBtn.setVisible(false);
+        crtBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                crtBtnMouseClicked(evt);
+            }
+        });
         bodyPnl.add(crtBtn);
-        crtBtn.setBounds(430, 320, 150, 16);
+        crtBtn.setBounds(490, 320, 100, 16);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -245,14 +249,35 @@ public class B_Login extends javax.swing.JFrame {
         
         if(n == 1)
         {
-            if( ("Admin".equals(id)) && ("Admin123".equals(pwd)))
+            String db_pass = new String();
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                 con = DriverManager.getConnection("jdbc:mysql://localhost:3306/stockite","root","rkgit123");
+            
+                pst = con.prepareStatement("select pass from admin where id='"+id+"'");
+                rs = pst.executeQuery();
+                
+                while(rs.next())
+                {
+                    db_pass = rs.getString("pass");
+                }
+                
+                pst = con.prepareStatement("insert into current values('"+id+"')");
+                pst.executeUpdate();
+            
+             } catch (ClassNotFoundException | SQLException ex) {
+            JOptionPane.showMessageDialog(null, "No Record Found", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if(db_pass.equals(pwd))
             {
                 new C_Admin().setVisible(true);
                 this.setVisible(false);
             }
             else
             {
-                JOptionPane.showMessageDialog(null, "Wrong Password");
+                
+            JOptionPane.showMessageDialog(null, "Incorrect ID or Password", "Error", JOptionPane.ERROR_MESSAGE);
+        
             }
         }
         
@@ -284,7 +309,9 @@ public class B_Login extends javax.swing.JFrame {
             }
             else
             {
-                JOptionPane.showMessageDialog(null, "Wrong Password");
+                
+            JOptionPane.showMessageDialog(null, "Incorrect ID or Password", "Error", JOptionPane.ERROR_MESSAGE);
+        
             }
         }
         
@@ -414,6 +441,12 @@ public class B_Login extends javax.swing.JFrame {
     private void shwBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_shwBtnActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_shwBtnActionPerformed
+
+    private void crtBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_crtBtnMouseClicked
+        // TODO add your handling code here:
+        new F_Create().setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_crtBtnMouseClicked
 
     /**
      * @param args the command line arguments

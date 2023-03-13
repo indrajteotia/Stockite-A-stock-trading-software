@@ -89,7 +89,6 @@ public class C_Admin extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Admin Page");
-        setAlwaysOnTop(true);
         setBackground(new java.awt.Color(0, 51, 51));
 
         bodyPnl.setBackground(new java.awt.Color(0, 51, 51));
@@ -303,6 +302,7 @@ public class C_Admin extends javax.swing.JFrame {
     private void cngBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cngBtnActionPerformed
         // TODO add your handling code here:
         cngPnl.setVisible(true);
+        cngBtn.setVisible(false);
     }//GEN-LAST:event_cngBtnActionPerformed
 
     private void cngTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cngTxtActionPerformed
@@ -312,6 +312,7 @@ public class C_Admin extends javax.swing.JFrame {
     private void bckBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bckBtnActionPerformed
         // TODO add your handling code here:
         cngPnl.setVisible(false);
+        cngBtn.setVisible(true);
     }//GEN-LAST:event_bckBtnActionPerformed
 
     private void cnfBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cnfBtnActionPerformed

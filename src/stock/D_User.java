@@ -100,7 +100,6 @@ public class D_User extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("User Page");
-        setAlwaysOnTop(true);
         setBackground(new java.awt.Color(0, 51, 51));
 
         bodyPnl.setBackground(new java.awt.Color(0, 51, 51));
